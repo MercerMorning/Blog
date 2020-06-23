@@ -1,0 +1,16 @@
+<form action="panel" method="post">
+    <h1>Edit user: {{ edit.email }}</h1>
+    <label for="name"><b>Name</b></label>
+    <input type="text" placeholder="Enter Name" name="nameEdit" required>
+
+    <label for="email"><b>Email</b></label>
+    <input type="text" placeholder="Enter Email" name="emailEdit" required>
+
+    <label for="psw"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" name="passwordEdit" required>
+
+    <label for="psw-repeat"><b>Repeat Password</b></label>
+    <input type="password" placeholder="Repeat Password" name="password-repeatEdit" required>
+    <hr>
+    <button type="submit" class="registerbtn">Add</button>
+</form>

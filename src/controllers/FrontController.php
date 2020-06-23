@@ -2,30 +2,11 @@
 
 namespace App\Controllers;
 
-use GUMP;
 use App\Models\User;
 class FrontController extends BaseController
 {
 
-    private function gumpAction($post)
-    {
-        $data = [
-            'username' => $post['name'],
-            'password' => $post['password'],
-            'email' => $post['email']
-        ];
 
-        $validated = GUMP::is_valid($data, array(
-            'username' => 'required|alpha_numeric|max_len,100|min_len,6',
-            'password' => 'required|max_len,100|min_len,6',
-            'email' => 'required|valid_email'
-        ));
-
-        if ($validated === true) {
-            return true;
-        }
-        return $validated;
-    }
 
     /**
      * Главная страница
@@ -40,7 +21,7 @@ class FrontController extends BaseController
      */
     public function register()
     {
-        $isValid = $this->gumpAction($_POST);
+        $isValid = $this->validation->gumpAction($_POST);
         $error = [];
         if ($isValid !== true) {
             $error = $isValid;
@@ -51,7 +32,7 @@ class FrontController extends BaseController
             return 0;
         }
         $userModel = new User();
-        $user = $userModel->get($_POST['email']);
+        $user = $userModel->getByEmail($_POST['email']);
         if (!empty($user)) {
             $this->view->render('front/register', ['error' => $error, 'result' => 'Register failed']);
             return 0;
@@ -68,7 +49,7 @@ class FrontController extends BaseController
     {
         if ($_POST['email'] && $_POST['password']) {
             $userModel = new User();
-            $user = $userModel->get($_POST['email']);
+            $user = $userModel->getByEmail($_POST['email']);
             if (password_verify($_POST['password'], $user['password']) && $user) {
                 $this->auth->login($user);
                 if (in_array($this->auth->user()['id'], ADMIN_ID)) {

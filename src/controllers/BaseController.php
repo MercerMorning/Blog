@@ -3,12 +3,14 @@
 namespace App\Controllers;
 
 use App\Models\Auth;
+use App\Models\Validation;
 use App\Services\SendEmail;
 use App\Services\SendEmailInterface;
 use App\Services\ViewInterface;
 use App\Services\ViewNative;
 use App\Services\ViewTwig;
 use Illuminate\Support\Facades\DB;
+
 
 class BaseController
 {
@@ -28,8 +30,14 @@ class BaseController
      */
     protected $sendEmail;
 
+    /**
+     * @var
+     */
+    protected $validation;
+
     public function __construct()
     {
+        $this->validation = new Validation();
         $this->auth = new Auth();
         $this->sendEmail = new SendEmail();
         if (!empty(VIEW_TYPE) && VIEW_TYPE == 'twig') {
@@ -45,6 +53,7 @@ class BaseController
         header("Location: http://" . ADDRESS . $url); //
         exit();
     }
+
 
 }
 

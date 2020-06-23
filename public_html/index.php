@@ -8,6 +8,7 @@ use App\Database\MicroBlogUsers;
 use App\Database\MicroBlogMessages;
 use App\Controllers\FrontController;
 use App\Controllers\MessageController;
+use App\Controllers\AdminPanelController;
 
 if (strpos($_SERVER['REQUEST_URI'], '/user/register') !== false) {
     $controller = new FrontController();
@@ -18,6 +19,12 @@ if (strpos($_SERVER['REQUEST_URI'], '/user/register') !== false) {
 if (strpos($_SERVER['REQUEST_URI'], '/user/login') !== false) {
     $controller = new FrontController();
     $controller->login();
+    return 0;
+}
+
+if (strpos($_SERVER['REQUEST_URI'], '/admin/panel') !== false) {
+    $controller = new AdminPanelController;
+    $controller->index();
     return 0;
 }
 
