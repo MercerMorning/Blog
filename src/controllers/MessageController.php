@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+include "../vendor/autoload.php";
+
 use App\Models\Message;
 use App\Models\Image;
 
@@ -18,12 +20,11 @@ class MessageController extends BaseController
         if ($this->auth->quest()) {
             throw new \Exception('Permission denied');
         }
-        //Добавляем данные в базу данных
         $userId = $this->auth->user()['id'];
         $messageModel->add($userId, boolval($_FILES['userfile']['tmp_name']), $_POST['text']); //Передавать user_ID, картинку, текст
         if (!empty($_FILES['userfile']['tmp_name'])) {
             $imageModel->add($_FILES['userfile']['tmp_name']);
         }
-        $this->redirect('/message/index');
+        $this->redirect('message/index');
     }
 }

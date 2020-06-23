@@ -8,6 +8,7 @@ use App\Services\SendEmailInterface;
 use App\Services\ViewInterface;
 use App\Services\ViewNative;
 use App\Services\ViewTwig;
+use Illuminate\Support\Facades\DB;
 
 class BaseController
 {

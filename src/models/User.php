@@ -11,10 +11,8 @@ class User extends Base
      */
     public function get($email)
     {
-        $sql = "SELECT * FROM micro_blog WHERE `email` = :user_email";
-        $statement = $this->getConnect()->prepare($sql);
-        $statement->execute(["user_email" => $email]);
-        return $statement->fetch(\PDO::FETCH_ASSOC);
+        $result = $this->microBlogTable->newQuery()->select()->where('email', '=', $email)->get()->toArray();
+        return $result[0];
     }
 
     /**
@@ -24,8 +22,10 @@ class User extends Base
      */
     public function add($user)
     {
-        $sql = "INSERT INTO micro_blog (email, password, `name`, register_date) VALUES (:email, :password, :name, :register_date)";
-        $statement = $this->getConnect()->prepare($sql);
-        return $statement->execute(["email" => $_POST["email"], "password" => password_hash($_POST["password"], PASSWORD_BCRYPT), "name" => $_POST["name"], "register_date" => date("y.m.d")]);
+        $this->microBlogTable->email = $user["email"];
+        $this->microBlogTable->password = password_hash($user["password"], PASSWORD_BCRYPT);
+        $this->microBlogTable->name = $user["name"];
+        $this->microBlogTable->register_date = date("y.m.d");
+        $this->microBlogTable->save();
     }
 }

@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use GUMP;
 use App\Models\User;
-
 class FrontController extends BaseController
 {
 
@@ -54,10 +53,11 @@ class FrontController extends BaseController
         $userModel = new User();
         $user = $userModel->get($_POST['email']);
         if (!empty($user)) {
+            $this->view->render('front/register', ['error' => $error, 'result' => 'Register failed']);
             return 0;
         }
         $userModel->add($_POST);
-        $this->sendEmail->send($_POST['email']);
+        //$this->sendEmail->send($_POST['email']);
         $this->view->render('front/register', ['error' => $error, 'result' => 'Register success']);
     }
 

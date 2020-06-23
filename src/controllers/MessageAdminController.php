@@ -27,7 +27,7 @@ class MessageAdminController extends BaseController
         if (!empty($_FILES['userfile']['tmp_name'])) {
             $imageModel->add($_FILES['userfile']['tmp_name']);
         }
-        $this->redirect('/message/indexAdmin');
+        $this->redirect('message/indexAdmin');
     }
 
 

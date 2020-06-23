@@ -16,12 +16,15 @@ class Image extends Base
         if (!file_exists($file)) {
             return 0;
         }
+        $result = $this->microBlogMessagesTable
+            ->newQuery()
+            ->select('id')
+            ->where('isset_image', '<>', '0')
+            ->orderByDesc('id')
+            ->get()
+            ->toArray();
         $imageManager = new MessageImage();
-        $sql = "SELECT id FROM `micro_blog_messages` WHERE isset_image = 1 ORDER BY id DESC";
-        $statement = $this->getConnect()->prepare($sql);
-        $statement->execute();
-        $result = $statement->fetch(\PDO::FETCH_ASSOC);
-        move_uploaded_file ($file, PROJECT_PATH . "/public_html/images/" . $result["id"] . ".jpg");
-        $imageManager->watermark(PROJECT_PATH . "/public_html/images/" . $result["id"] . ".jpg");
+        move_uploaded_file ($file, PROJECT_PATH . "/public_html/images/" . $result[0]['id'] . ".jpg");
+        $imageManager->watermark(PROJECT_PATH . "/public_html/images/" . $result[0]['id'] . ".jpg");
     }
 }

@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+
 class Message extends Base
 {
     public function getAllIdWithImages()
     {
-        $sql = "SELECT id FROM `micro_blog_messages` WHERE isset_image = 1";
-        $statement = $this->getConnect()->prepare($sql);
-        $statement->execute();
-        return $statement->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $this->microBlogMessagesTable
+            ->newQuery()
+            ->select('id')
+            ->where('isset_image', '<>', '0')
+            ->get()
+            ->toArray();
+        return $result;
     }
 
     /**
@@ -18,10 +22,15 @@ class Message extends Base
      */
     public function getAll()
     {
-        $sql = "SELECT micro_blog_messages.id, text, date, name FROM micro_blog_messages INNER JOIN micro_blog ON micro_blog.id = micro_blog_messages.user_id ORDER BY id DESC LIMIT 3";
-        $statement = $this->getConnect()->prepare($sql);
-        $statement->execute();
-        return $statement->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $this->microBlogMessagesTable
+            ->newQuery()
+            ->join('micro_blog', 'micro_blog.id', '=', 'micro_blog_messages.user_id')
+            ->select('micro_blog_messages.id', 'text', 'date', 'name')
+            ->orderByDesc('id')
+            ->limit(3)
+            ->get()
+            ->toArray();
+        return $result;
     }
 
     /**
@@ -32,13 +41,18 @@ class Message extends Base
      */
     public function add($userId, $isSetImage, $text)
     {
-        $sql = "INSERT INTO `micro_blog_messages` (text, `date`, isset_image, user_id) VALUES (:text, :date, :isset_image,:user_id)";
-        $statement = $this->getConnect()->prepare($sql);
-        $result = $statement->execute(["text" => $text,
-            "date" => date("y.m.d"),
-            "isset_image" => $isSetImage ? 1 : 0,
-            "user_id" => $userId
-        ]);
+        $lastInsertID = $this->microBlogMessagesTable
+            ->newQuery()
+            ->select('id')
+            ->orderByDesc('id')
+            ->limit(1)
+            ->get()
+            ->toArray();
+        $this->microBlogMessagesTable->text = $text;
+        $this->microBlogMessagesTable->date = date("y.m.d");
+        $this->microBlogMessagesTable->isset_image = $isSetImage ? '/images/' . ++$lastInsertID[0]["id"] . '.jpg' : 0;
+        $this->microBlogMessagesTable->user_id = $userId;
+        $result = $this->microBlogMessagesTable->save();
         return $result;
     }
 
@@ -48,10 +62,11 @@ class Message extends Base
      */
     public function delete($id)
     {
-        $sql = "DELETE FROM micro_blog_messages WHERE id=:id";
-        $statement = $this->getConnect()->prepare($sql);
-        $statement->execute(["id" => $id]);
-        return $statement->rowCount();
+        $result = $this->microBlogMessagesTable
+            ->newQuery()
+            ->where('id', '=', $id)
+            ->delete();
+        return $result;
     }
 
     /**
@@ -61,9 +76,17 @@ class Message extends Base
      */
     public function getAllById($id)
     {
-        $sql = "SELECT text FROM `micro_blog_messages` WHERE user_id=:user_id";
-        $statement = $this->getConnect()->prepare($sql);
-        $statement->execute(["user_id" => $id]);
-        return json_encode($statement->fetchAll(\PDO::FETCH_ASSOC));
+        $result = $this->microBlogMessagesTable
+            ->newQuery()
+            ->select('text')
+            ->where('user_id', '=', $id)
+            ->get()
+            ->toArray();
+        return json_encode($result);
+
+//        $sql = "SELECT text FROM `micro_blog_messages` WHERE user_id=:user_id";
+//        $statement = $this->getConnect()->prepare($sql);
+//        $statement->execute(["user_id" => $id]);
+//        return json_encode($statement->fetchAll(\PDO::FETCH_ASSOC));
     }
 }
